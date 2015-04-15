@@ -1,7 +1,6 @@
 package sqlbuilder
 
 import (
-	sqldriver "database/sql/driver"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -20,16 +19,6 @@ type literalImpl struct {
 }
 
 func toLiteral(v interface{}) literal {
-	refv := reflect.ValueOf(v)
-	if v != nil &&
-		refv.Kind() == reflect.Ptr &&
-		!refv.Type().Implements(reflect.TypeOf((*sqldriver.Valuer)(nil)).Elem()) {
-		if refv.IsNil() {
-			v = nil
-		} else {
-			v = reflect.Indirect(refv).Interface()
-		}
-	}
 	return &literalImpl{
 		raw:         v,
 		placeholder: true,
@@ -37,18 +26,11 @@ func toLiteral(v interface{}) literal {
 }
 
 func (l *literalImpl) serialize(bldr *builder) {
-	val, err := l.converted()
-	if err != nil {
-		bldr.SetError(err)
-		return
-	}
-
 	if l.placeholder {
-		bldr.AppendValue(val)
+		bldr.AppendValue(l.raw)
 	} else {
 		bldr.Append(l.string())
 	}
-	return
 }
 
 func (l *literalImpl) IsNil() bool {
@@ -65,41 +47,30 @@ func (l *literalImpl) IsNil() bool {
 	}
 }
 
-// convert to sqldriver.Value(int64/float64/bool/[]byte/string/time.Time)
-func (l *literalImpl) converted() (interface{}, error) {
-	switch t := l.raw.(type) {
-	case int, int8, int16, int32, int64:
-		return int64(reflect.ValueOf(t).Int()), nil
-	case uint, uint8, uint16, uint32, uint64:
-		return int64(reflect.ValueOf(t).Uint()), nil
-	case float32, float64:
-		return reflect.ValueOf(l.raw).Float(), nil
-	case bool:
-		return t, nil
-	case []byte:
-		return t, nil
-	case string:
-		return t, nil
-	case time.Time:
-		return t, nil
-	case sqldriver.Valuer:
-		return t, nil
-	case nil:
-		return nil, nil
-	default:
-		return nil, newError("got %T type, but literal is not supporting this.", t)
-	}
-}
-
 func (l *literalImpl) string() string {
-	val, err := l.converted()
-	if err != nil {
-		return ""
-	}
-
-	switch t := val.(type) {
+	switch t := l.raw.(type) {
+	case int:
+		return strconv.FormatInt(int64(t), 10)
+	case int8:
+		return strconv.FormatInt(int64(t), 10)
+	case int16:
+		return strconv.FormatInt(int64(t), 10)
+	case int32:
+		return strconv.FormatInt(int64(t), 10)
 	case int64:
 		return strconv.FormatInt(t, 10)
+	case uint:
+		return strconv.FormatUint(uint64(t), 10)
+	case uint8:
+		return strconv.FormatUint(uint64(t), 10)
+	case uint16:
+		return strconv.FormatUint(uint64(t), 10)
+	case uint32:
+		return strconv.FormatUint(uint64(t), 10)
+	case uint64:
+		return strconv.FormatUint(t, 10)
+	case float32:
+		return strconv.FormatFloat(float64(t), 'f', 10, 32)
 	case float64:
 		return strconv.FormatFloat(t, 'f', 10, 64)
 	case bool:
