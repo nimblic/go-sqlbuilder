@@ -224,6 +224,8 @@ func (m *columnImpl) acceptType(val interface{}) bool {
 func (m *columnImpl) serialize(bldr *builder) {
 	if m == Star {
 		bldr.Append("*")
+	} else if m.columnConfigImpl == nil {
+		bldr.Append(dialect().QuoteField(m.table.Name()) + ".*")
 	} else {
 		bldr.Append(dialect().QuoteField(m.table.Name()) + "." + dialect().QuoteField(m.name))
 	}
