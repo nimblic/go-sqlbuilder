@@ -97,6 +97,10 @@ func (m *table) serialize(bldr *builder) {
 }
 
 func (m *table) C(name string) Column {
+	if name == "*" {
+		return &columnImpl{nil, m}
+	}
+
 	for _, column := range m.columns {
 		if column.column_name() == name {
 			return column
