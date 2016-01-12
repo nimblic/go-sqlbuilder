@@ -207,3 +207,43 @@ func (c *inCondition) columns() []Column {
 	}
 	return list
 }
+
+type notInCondition struct {
+	left  serializable
+	notIn []serializable
+}
+
+func newNotInCondition(left Column, list ...interface{}) Condition {
+	m := &notInCondition{
+		left:  left,
+		notIn: make([]serializable, 0, len(list)),
+	}
+	for _, item := range list {
+		if c, ok := item.(Column); ok {
+			m.notIn = append(m.notIn, c)
+		} else {
+			m.notIn = append(m.notIn, toLiteral(item))
+		}
+	}
+	return m
+}
+
+func (c *notInCondition) serialize(bldr *builder) {
+	bldr.AppendItem(c.left)
+	bldr.Append(" NOT IN ( ")
+	bldr.AppendItems(c.notIn, ", ")
+	bldr.Append(" )")
+}
+
+func (c *notInCondition) columns() []Column {
+	list := make([]Column, 0)
+	if col, ok := c.left.(Column); ok {
+		list = append(list, col)
+	}
+	for _, notIn := range c.notIn {
+		if col, ok := notIn.(Column); ok {
+			list = append(list, col)
+		}
+	}
+	return list
+}

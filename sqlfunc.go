@@ -100,6 +100,10 @@ func (left *sqlFuncImpl) In(vals ...interface{}) Condition {
 	return newInCondition(left, vals...)
 }
 
+func (left *sqlFuncImpl) NotIn(val ...interface{}) Condition {
+	return newNotInCondition(left, val...)
+}
+
 func (m *sqlFuncImpl) columns() []Column {
 	return m.args
 }

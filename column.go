@@ -144,6 +144,9 @@ type Column interface {
 
 	// In creates Condition for "column IN (values[0], values[1] ...)".  Type for values is column's one or other Column.
 	In(values ...interface{}) Condition
+
+	// NotIn creates Condition for "column NOT IN (values[0], values[1] ...)".  Type for values is column's one or other Column.
+	NotIn(values ...interface{}) Condition
 }
 
 type aliasedColumn interface {
@@ -319,6 +322,10 @@ func (left *columnImpl) In(val ...interface{}) Condition {
 	return newInCondition(left, val...)
 }
 
+func (left *columnImpl) NotIn(val ...interface{}) Condition {
+	return newNotInCondition(left, val...)
+}
+
 func (b ColumnList) serialize(bldr *builder) {
 	first := true
 	for _, column := range b {
@@ -403,6 +410,10 @@ func (left *errorColumn) In(val ...interface{}) Condition {
 	return newInCondition(left, val...)
 }
 
+func (left *errorColumn) NotIn(val ...interface{}) Condition {
+	return newNotInCondition(left, val...)
+}
+
 type aliasColumn struct {
 	column Column
 	alias  string
@@ -474,4 +485,8 @@ func (left *aliasColumn) Between(lower, higher interface{}) Condition {
 
 func (left *aliasColumn) In(val ...interface{}) Condition {
 	return newInCondition(left, val...)
+}
+
+func (left *aliasColumn) NotIn(val ...interface{}) Condition {
+	return newNotInCondition(left, val...)
 }
