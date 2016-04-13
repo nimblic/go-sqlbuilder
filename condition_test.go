@@ -66,6 +66,11 @@ func TestBinaryCondition(t *testing.T) {
 			args:   []interface{}{int64(1), int64(2)},
 			errmsg: "",
 		}, {
+			cond:   table1.C("id").NotIn(1, 2),
+			query:  `"TABLE_A"."id" NOT IN ( ?, ? )`,
+			args:   []interface{}{int64(1), int64(2)},
+			errmsg: "",
+		}, {
 			cond:   table1.C("id").Eq(nil),
 			query:  `"TABLE_A"."id" IS NULL`,
 			args:   []interface{}{},
@@ -84,6 +89,12 @@ func TestBinaryCondition(t *testing.T) {
 			// case for fail
 			cond:   table1.C("id").In(NewTable("DUMMY TABLE", &TableOption{}, StringColumn("id", nil))),
 			query:  `"TABLE_A"."id" IN ( `,
+			args:   []interface{}{},
+			errmsg: "sqlbuilder: got sqlbuilder.table type, but literal is not supporting this.",
+		}, {
+			// case for fail
+			cond:   table1.C("id").NotIn(NewTable("DUMMY TABLE", &TableOption{}, StringColumn("id", nil))),
+			query:  `"TABLE_A"."id" NOT IN ( `,
 			args:   []interface{}{},
 			errmsg: "sqlbuilder: got sqlbuilder.table type, but literal is not supporting this.",
 		},
@@ -159,8 +170,18 @@ func TestBinaryConditionForSqlFunctions(t *testing.T) {
 			args:   []interface{}{int64(1), int64(2)},
 			errmsg: "",
 		}, {
+			cond:   Func("count", table1.C("id")).NotIn(1, 2),
+			query:  `count("TABLE_A"."id") NOT IN ( ?, ? )`,
+			args:   []interface{}{int64(1), int64(2)},
+			errmsg: "",
+		}, {
 			cond:   Func("count", table1.C("id")).In(NewTable("DUMMY TABLE", &TableOption{}, StringColumn("id", nil))),
 			query:  `count("TABLE_A"."id") IN ( `,
+			args:   []interface{}{},
+			errmsg: "sqlbuilder: got sqlbuilder.table type, but literal is not supporting this.",
+		}, {
+			cond:   Func("count", table1.C("id")).NotIn(NewTable("DUMMY TABLE", &TableOption{}, StringColumn("id", nil))),
+			query:  `count("TABLE_A"."id") NOT IN ( `,
 			args:   []interface{}{},
 			errmsg: "sqlbuilder: got sqlbuilder.table type, but literal is not supporting this.",
 		},
