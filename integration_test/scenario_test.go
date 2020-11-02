@@ -6,7 +6,7 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
-	sb "github.com/umisama/go-sqlbuilder"
+	sb "github.com/nimblic/go-sqlbuilder"
 	_ "github.com/ziutek/mymysql/godrv"
 )
 
