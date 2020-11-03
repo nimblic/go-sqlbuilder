@@ -104,6 +104,10 @@ func (left *sqlFuncImpl) IntersectJSON(data string) Condition {
 	return newIntersectJSONCondition(left, data)
 }
 
+func (left *sqlFuncImpl) NotIn(val ...interface{}) Condition {
+	return newNotInCondition(left, val...)
+}
+
 func (m *sqlFuncImpl) columns() []Column {
 	return m.args
 }

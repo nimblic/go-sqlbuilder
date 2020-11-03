@@ -321,6 +321,7 @@ Here is supporting:
 |LtEq(Column or value)  |LESS-THAN OR EQUAL TO   |   ```<=```    | "TABLE"."id" <= 10   |
 |Like(string)           |LIKE                    |  ```LIKE```   | "TABLE"."id" LIKE "%hoge%"   |
 |In(values array)       |IN                      |   ```IN```    | "TABLE"."id" IN ( 1, 2, 3 ) |
+|NotIn(values array)    |NOT IN                  | ```NOT IN```  | "TABLE"."id" NOT IN ( 1, 2, 3 ) |
 |Between(loewer, higher int) |BETWEEN            | ```BETWEEN``` | "TABLE"."id" BETWEEN 10 AND 20)|
 
 Document for all: [godoc(Column)](http://godoc.org/github.com/umisama/go-sqlbuilder#Column)

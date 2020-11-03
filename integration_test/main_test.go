@@ -10,8 +10,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
-	sb "github.com/umisama/go-sqlbuilder"
-	"github.com/umisama/go-sqlbuilder/dialects"
+	sb "github.com/nimblic/go-sqlbuilder"
+	"github.com/nimblic/go-sqlbuilder/dialects"
 	_ "github.com/ziutek/mymysql/godrv"
 )
 
