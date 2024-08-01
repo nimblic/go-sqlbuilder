@@ -151,7 +151,7 @@ type Column interface {
 	// NotIn creates Condition for "column NOT IN (values[0], values[1] ...)".  Type for values is column's one or other Column.
 	NotIn(values ...interface{}) Condition
 
-	//Is null creates Condiftion for "column IS NULL"
+	//IsNull creates Condition for "column IS NULL"
 	IsNull() Condition
 }
 
