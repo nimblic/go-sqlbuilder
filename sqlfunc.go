@@ -111,3 +111,6 @@ func (left *sqlFuncImpl) NotIn(val ...interface{}) Condition {
 func (m *sqlFuncImpl) columns() []Column {
 	return m.args
 }
+func (left *sqlFuncImpl) IsNull() Condition {
+	return newUnaryOperationCondition(left, "IS NULL")
+}

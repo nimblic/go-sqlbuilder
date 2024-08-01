@@ -150,6 +150,9 @@ type Column interface {
 
 	// NotIn creates Condition for "column NOT IN (values[0], values[1] ...)".  Type for values is column's one or other Column.
 	NotIn(values ...interface{}) Condition
+
+	//IsNull creates Condition for "column IS NULL"
+	IsNull() Condition
 }
 
 type aliasedColumn interface {
@@ -333,6 +336,9 @@ func (left *columnImpl) NotIn(val ...interface{}) Condition {
 	return newNotInCondition(left, val...)
 }
 
+func (left *columnImpl) IsNull() Condition {
+	return newUnaryOperationCondition(left, "IS NULL")
+}
 func (b ColumnList) serialize(bldr *builder) {
 	first := true
 	for _, column := range b {
@@ -424,6 +430,9 @@ func (left *errorColumn) IntersectJSON(data string) Condition {
 func (left *errorColumn) NotIn(val ...interface{}) Condition {
 	return newNotInCondition(left, val...)
 }
+func (left *errorColumn) IsNull() Condition {
+	return newUnaryOperationCondition(left, "IS NULL")
+}
 
 type aliasColumn struct {
 	column Column
@@ -504,4 +513,8 @@ func (left *aliasColumn) IntersectJSON(data string) Condition {
 
 func (left *aliasColumn) NotIn(val ...interface{}) Condition {
 	return newNotInCondition(left, val...)
+}
+
+func (left *aliasColumn) IsNull() Condition {
+	return newUnaryOperationCondition(left, "IS NULL")
 }
