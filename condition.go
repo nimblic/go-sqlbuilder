@@ -63,6 +63,42 @@ type binaryOperationCondition struct {
 	err      error
 }
 
+type unaryOperationCondition struct {
+	left     serializable
+	operator string
+	err      error
+}
+
+func newUnaryOperationCondition(left interface{}, operator string) *unaryOperationCondition {
+	cond := &unaryOperationCondition{
+		operator: operator,
+	}
+
+	switch t := left.(type) {
+	case Column:
+		cond.left = t
+	case nil:
+		cond.err = newError("left-hand side of unary operator is null.")
+	default:
+		cond.left = toLiteral(t)
+	}
+
+	return cond
+}
+
+func (c *unaryOperationCondition) serialize(bldr *builder) {
+	bldr.AppendItem(c.left)
+	bldr.Append(c.operator)
+}
+
+func (c *unaryOperationCondition) columns() []Column {
+	list := make([]Column, 0)
+	if col, ok := c.left.(Column); ok {
+		list = append(list, col)
+	}
+	return list
+}
+
 func newBinaryOperationCondition(left, right interface{}, operator string) *binaryOperationCondition {
 	cond := &binaryOperationCondition{
 		operator: operator,
